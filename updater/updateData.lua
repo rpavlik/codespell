@@ -6,6 +6,8 @@ local CorrectionDatabase = require "CorrectionDatabase"
 
 data = CorrectionDatabase()
 
+outfn = "outputdict.txt"
+
 local lastTypos = 0
 local lastCorrections = 0
 for _, fn in ipairs(arg) do
@@ -30,7 +32,8 @@ for _, fn in ipairs(arg) do
 	lastCorrections = corrections
 end
 
-local f = assert(io.open("outputdict.txt", "wb"))
+print("Writing unified database out to:", outfn)
+local f = assert(io.open(outfn, "wb"))
 f:write(data:serialize())
 f:close()
 
