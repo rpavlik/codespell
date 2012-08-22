@@ -33,6 +33,11 @@ DEALINGS IN THE SOFTWARE.
 
 require "strict"
 
+-- Requires lua penlight
+-- Looks relative to this file.
+local app = require "pl.app"
+app.require_here "modules"
+
 local CorrectionUtils = require "CorrectionUtils"
 local UniqueList = require "UniqueList"
 
