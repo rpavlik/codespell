@@ -326,7 +326,7 @@ def ask_for_word_fix(line, wrongword, misspelling, interactivity):
             misspelling.fix = False
             misspelling.fixword = ''
 
-    elif (interactivity & 2) and not misspelling.reason:
+    elif (interactivity & 2) and not misspelling.reason and misspelling.data.find(',') >= 0:
         # if it is not disabled, i.e. it just has more than one possible fix,
         # we ask the user which word to use
 
