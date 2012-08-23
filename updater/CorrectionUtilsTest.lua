@@ -34,6 +34,10 @@ DEALINGS IN THE SOFTWARE.
 require "strict"
 
 -- Requires lua penlight
+
+-- Try loading luarocks just in case it's needed for dependencies
+pcall(require, "luarocks.loader")
+
 -- Looks relative to this file.
 local app = require "pl.app"
 app.require_here "modules"
