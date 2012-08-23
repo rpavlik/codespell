@@ -19,8 +19,29 @@ This directory has two main tools for helping maintain the dictionary database.
       on older versions use LuaRocks in two steps: `sudo apt-get install
       lua5.1 luarocks` then `luarocks --local install penlight luafilesystem`
 
+The other tools, `findReasons.sh` and `preprocessWikipediaContent.sh`,
+(as well as the test script `CorrectionUtilsTest.lua`) have comments
+that explain how and why you'd use them.
+
 [lua-penlight]:https://github.com/stevedonovan/Penlight
 [LuaFileSystem]:http://keplerproject.github.com/luafilesystem/manual.html
+
+## *tl;dr:* Typical usage for dictionary update
+To grab the latest Wikipedia and merge it in, these commands will
+suffice. If you want to know what they mean/do, read the rest of this
+doc.
+
+Note that you should verify the diff before you commit it (ideally
+testing it to identify any potential false-positives). `findReasons.sh`
+in particular is useful in "proofreading" the database after
+modification. In your commit message, be sure to mention the page
+revision merged in. (This is in the filename that `grabLatest.sh`
+creates.)
+
+```sh
+./grabLatest.sh
+./updateData.lua -i ../data/dictionary.txt wikipedia-*.txt -e exclusionfile.txt
+```
 
 ## Examples
 
@@ -30,8 +51,10 @@ Download the newest version of the wikipedia page:
 ./grabLatest.sh
 ```
 
-Assuming we got revision 499817117 above, merge the original dictionary
-and wikipedia into `outputdict.txt`, disabling "ok->OK" by default:
+For the rest of the examples, we'll be assuming we got revision
+499817117 above.
+
+Merge the original dictionary and Wikipedia into `outputdict.txt`, disabling "ok->OK" by default:
 
 ```sh
 ./updateData.lua ../data/dictionary.txt wikipedia-499817117.txt -r ok "lowercase variable names are nice"
