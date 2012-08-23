@@ -81,6 +81,12 @@ CorrectionUtils.serializeCorrection = function(parsed)
 	-- nil is a no-op
 	if parsed == nil then return nil end
 
+	-- Don't serialize if it doesn't have any corrections.
+	if parsed.corrections.count == 0 then
+		print("Warning: Skipping entry " .. parsed.incorrect .. " because it has no corrections.")
+		return nil
+	end
+
 	local ret = {
 		parsed.incorrect,
 		"->",
