@@ -98,12 +98,10 @@ CorrectionUtils.serializeCorrection = function(parsed)
 end
 
 local checkCorrections = function(ret)
-	local gotOne = false
 	for v in ret.corrections:iter() do
 		if type(v) ~= "string" then return false end
-		gotOne = true
 	end
-	return gotOne
+	return true
 end
 
 CorrectionUtils.validateParsedInput = function(parsed)
