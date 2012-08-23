@@ -392,7 +392,9 @@ def parse_file(filename, colors, summary):
 
         for word in rx.findall(line):
             lword = word.lower()
-            if lword in misspellings:
+            # If this is in the mispelling database, and it's not just a case
+            # difference that is actually a non-issue (like OK triggering ok->OK)
+            if lword in misspellings and word != misspellings[lword].data:
                 fix = misspellings[lword].fix
                 fixword = fix_case(word, misspellings[lword].data)
 
