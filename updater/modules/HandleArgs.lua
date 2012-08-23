@@ -23,7 +23,7 @@ options = {
 
 	["--reason"] = {
 		short = "-r";
-		doc = "Disable automatic replacement of a mispelling by specifying both the mispelling and a quoted reason.";
+		doc = "Disable automatic replacement of a misspelling by specifying both the misspelling and a quoted reason.";
 		params = {"misspelling", "reason"};
 		action = function(t)
 			table.insert(extralines, ("%s->,%s"):format(t.misspelling, t.reason))
