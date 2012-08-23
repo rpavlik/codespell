@@ -2263,7 +2263,7 @@ laguages->languages
 larg->large
 largst->largest
 larrry->larry
-lastr->last
+lastr->last, could be lastR
 lattitude->latitude
 launchs->launch, launches,
 launhed->launched
