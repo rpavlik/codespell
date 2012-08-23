@@ -99,6 +99,7 @@ local datamethods = {
 			return self[key]
 		end
 	end;
+
 	serialize = function(self)
 		local ret = {}
 		for correction in self:sortedIter() do
@@ -110,6 +111,7 @@ local datamethods = {
 		table.insert(ret, "") -- for a trailing newline
 		return table.concat(ret, "\n")
 	end;
+
 	getCounts = function(self)
 		local incorrects = 0
 		local fixes = 0
