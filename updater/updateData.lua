@@ -49,36 +49,150 @@ local app = require "pl.app"
 app.require_here "modules"
 
 local CorrectionDatabase = require "CorrectionDatabase"
-
+local HandleArgs = require "HandleArgs"
 data = CorrectionDatabase()
 
 outfn = "outputdict.txt"
+todelete = {}
+extralines = {}
+inplace = false
+quiet = false
 
-local lastTypos = 0
-local lastCorrections = 0
-for _, fn in ipairs(arg) do
-	print("Loading file", fn)
+options = {
+	["--quiet"] = {
+		short = "-q";
+		doc = "Silences status output.";
+		action = function()
+			quiet = true
+		end;
+	};
+
+	["--delete"] = {
+		short = "-d";
+		doc = "Deletes a misspelling from the database before writing.";
+		params = {"misspelling"};
+		action = function(t)
+			table.insert(todelete, t.misspelling)
+		end;
+	};
+
+	["--exclusions"] = {
+		short = "-e";
+		doc = "Specifies a file where each line is a misspelling to delete.";
+		params = {"exclusionfile"};
+		action = function(t)
+			local f = assert(io.open(t.exclusionfile, "r"))
+			for line in f:lines() do
+				table.insert(todelete, line)
+			end
+			f:close()
+		end;
+	};
+
+	["--add"] = {
+		short = "-a";
+		doc = "Adds a quoted misspelling line to the database before writing.";
+		params = {"databaseline"};
+		action = function(t)
+			table.insert(extralines, t.databaseline)
+		end;
+	};
+
+	["--reason"] = {
+		short = "-r";
+		doc = "Disable automatic replacement of a mispelling by specifying both the mispelling and a quoted reason.";
+		params = {"misspelling", "reason"};
+		action = function(t)
+			table.insert(extralines, ("%s->,%s"):format(t.misspelling, t.reason))
+		end;
+	};
+
+	["--output"] = {
+		short = "-o";
+		doc = "Sets the output filename (defaults to " .. outfn .. ")";
+		params = {"outfile"};
+		action = function(t)
+			outfn = t.outfile
+		end;
+	};
+
+	["--inplace"] = {
+		short = "-i";
+		doc = "Sets the output filename to be equal to the first input filename";
+		action = function()
+			inplace = true
+		end;
+	};
+}
+
+local usage = HandleArgs.createUsage(options, "All additional arguments will be treated as input files.")
+
+if #arg == 0 then
+	usage()
+end
+
+local files = HandleArgs.process(options)
+
+if inplace then
+	outfn = files[1]
+end
+
+local respectfulPrint = function(...)
+	if not quiet then
+		print(...)
+	end
+end
+
+
+do
+	local lastTypos = 0
+	local lastCorrections = 0
+	displayDataStatus = function()
+		local typos, corrections = data:getCounts()
+		respectfulPrint( ("Status: %d [%+d] incorrect spellings, %d [%+d] corrections\n"):format(
+				typos,
+				typos - lastTypos,
+				corrections,
+				corrections - lastCorrections)
+		)
+		lastTypos = typos
+		lastCorrections = corrections
+	end
+end
+
+for i, fn in ipairs(files) do
+	respectfulPrint("Loading file", fn, ("(%d of %d)"):format(i, #files))
 	local f = assert(io.open(fn, "r"))
 	for line in f:lines() do
-		--[[local parsed = CorrectionUtils.parseLine(line)
-		CorrectionUtils.printCorrection(parsed)
-		print(CorrectionUtils.serializeCorrection(parsed))]]
 		data:add(line)
 	end
 	f:close()
-	local typos, corrections = data:getCounts()
-	print("Current incorrect spelling and corrections counts:")
-	print( ("%d [+%d] incorrect spellings, %d [+%d] corrections\n"):format(
-			typos,
-			typos - lastTypos,
-			corrections,
-			corrections - lastCorrections)
-	)
-	lastTypos = typos
-	lastCorrections = corrections
+	displayDataStatus()
 end
 
-print("Writing unified database out to:", outfn)
+if #extralines > 0 then
+	respectfulPrint("Adding entries specified on command line:", #extralines)
+	for _, line in ipairs(extralines) do
+		data:add(line)
+	end
+	displayDataStatus()
+end
+
+if #todelete > 0 then
+	respectfulPrint("Deleting entries specified on command line:", #todelete)
+	for _, item in ipairs(todelete) do
+		data:delete(item)
+	end
+	displayDataStatus()
+end
+
+local typos = data:getCounts()
+if typos == 0 then
+	print("ERROR: No incorrect spellings in the database! Skipping writing to file!\n\n")
+	usage(2) -- print usage and exit with code 2
+end
+
+respectfulPrint("Writing unified database out to:", outfn)
 local f = assert(io.open(outfn, "wb"))
 f:write(data:serialize())
 f:close()
