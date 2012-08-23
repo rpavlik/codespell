@@ -210,7 +210,7 @@ def parse_options(args):
                                'accepts globs as well. E.g.: if you want '\
                                'codespell to skip .eps and .txt files, '\
                                'you\'d give "*.eps,*.txt" to this option. '\
-                               'It is expecially useful if you are using in '\
+                               'It is especially useful if you are using in '\
                                'conjunction with -r option.')
 
     parser.add_option('-x', '--exclude-file',
@@ -392,7 +392,7 @@ def parse_file(filename, colors, summary):
 
         for word in rx.findall(line):
             lword = word.lower()
-            # If this is in the mispelling database, and it's not just a case
+            # If this is in the misspelling database, and it's not just a case
             # difference that is actually a non-issue (like OK triggering ok->OK)
             if lword in misspellings and word != misspellings[lword].data:
                 fix = misspellings[lword].fix
