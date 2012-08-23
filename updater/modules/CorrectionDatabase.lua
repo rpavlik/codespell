@@ -78,6 +78,13 @@ local datamethods = {
 			end
 		end
 	end;
+
+	delete = function(self, incorrect)
+		if self[incorrect] then
+			self[incorrect] = nil
+		end
+	end;
+
 	sortedIter = function(self)
 		local keys = {}
 		for k, _ in pairs(self) do
