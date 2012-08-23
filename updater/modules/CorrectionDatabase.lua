@@ -34,6 +34,8 @@ DEALINGS IN THE SOFTWARE.
 local UniqueList = require "UniqueList"
 local CorrectionUtils = require "CorrectionUtils"
 local bininsert = require "bininsert"
+local stringx = require 'pl.stringx'
+stringx.import()
 
 local mostlyCaseInsensitiveCompare = function(a, b)
 	local al = a:lower()
@@ -80,8 +82,8 @@ local datamethods = {
 	end;
 
 	delete = function(self, incorrect)
-		if self[incorrect] then
-			self[incorrect] = nil
+		if self[incorrect:strip()] then
+			self[incorrect:strip()] = nil
 		end
 	end;
 
